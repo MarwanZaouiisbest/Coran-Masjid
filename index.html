@@ -1,0 +1,1116 @@
+const ComponentFunction = function() {
+  const React = require('react');
+  const { useState, useEffect, useContext, useMemo, useCallback } = React;
+  const { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Modal, Alert, Platform, StatusBar, ActivityIndicator, KeyboardAvoidingView, FlatList } = require('react-native');
+  const { MaterialIcons } = require('@expo/vector-icons');
+  const { createBottomTabNavigator } = require('@react-navigation/bottom-tabs');
+  
+  const storageStrategy = 'local';
+  const primaryColor = '#1E3A8A';
+  const accentColor = '#3B82F6';
+  const backgroundColor = '#F8FAFC';
+  const cardColor = '#FFFFFF';
+  const textPrimary = '#1F2937';
+  const textSecondary = '#6B7280';
+  const designStyle = 'modern';
+  
+  const Tab = createBottomTabNavigator();
+  
+  const ThemeContext = React.createContext();
+  const ThemeProvider = function(props) {
+    const [darkMode, setDarkMode] = useState(false);
+    const lightTheme = useMemo(function() {
+      return {
+        colors: {
+          primary: primaryColor,
+          accent: accentColor,
+          background: backgroundColor,
+          card: cardColor,
+          textPrimary: textPrimary,
+          textSecondary: textSecondary,
+          border: '#E5E7EB',
+          success: '#10B981',
+          error: '#EF4444',
+          warning: '#F59E0B',
+          purple: '#A855F7',
+          pink: '#EC4899',
+          cyan: '#06B6D4',
+          amber: '#F59E0B',
+          emerald: '#10B981'
+        }
+      };
+    }, []);
+    const darkTheme = useMemo(function() {
+      return {
+        colors: {
+          primary: primaryColor,
+          accent: accentColor,
+          background: '#1F2937',
+          card: '#374151',
+          textPrimary: '#F9FAFB',
+          textSecondary: '#D1D5DB',
+          border: '#4B5563',
+          success: '#10B981',
+          error: '#EF4444',
+          warning: '#F59E0B',
+          purple: '#A855F7',
+          pink: '#EC4899',
+          cyan: '#06B6D4',
+          amber: '#F59E0B',
+          emerald: '#10B981'
+        }
+      };
+    }, []);
+    const theme = darkMode ? darkTheme : lightTheme;
+    const toggleDarkMode = useCallback(function() {
+      setDarkMode(function(prev) { return !prev; });
+    }, []);
+    const value = useMemo(function() {
+      return { theme: theme, darkMode: darkMode, toggleDarkMode: toggleDarkMode, designStyle: designStyle };
+    }, [theme, darkMode, toggleDarkMode]);
+    return React.createElement(ThemeContext.Provider, { value: value }, props.children);
+  };
+  const useTheme = function() { return useContext(ThemeContext); };
+
+  const AppDataContext = React.createContext();
+  const AppDataProvider = function(props) {
+    const [sourates] = useState([
+      { id: 1, name: 'Al-Fatiha', nameArabic: 'الفاتحة', verses: 7, type: 'Mecquoise', description: 'L\'ouverture' },
+      { id: 2, name: 'Al-Baqarah', nameArabic: 'البقرة', verses: 286, type: 'Médinoise', description: 'La Vache' },
+      { id: 3, name: 'Ali \'Imran', nameArabic: 'آل عمران', verses: 200, type: 'Médinoise', description: 'La Famille d\'Imran' },
+      { id: 4, name: 'An-Nisa', nameArabic: 'النساء', verses: 176, type: 'Médinoise', description: 'Les Femmes' },
+      { id: 5, name: 'Al-Ma\'idah', nameArabic: 'المائدة', verses: 120, type: 'Médinoise', description: 'La Table servie' },
+      { id: 6, name: 'Al-An\'am', nameArabic: 'الأنعام', verses: 165, type: 'Mecquoise', description: 'Les Bestiaux' },
+      { id: 7, name: 'Al-A\'raf', nameArabic: 'الأعراف', verses: 206, type: 'Mecquoise', description: 'Les Murailles' },
+      { id: 8, name: 'Al-Anfal', nameArabic: 'الأنفال', verses: 75, type: 'Médinoise', description: 'Le Butin' },
+      { id: 9, name: 'At-Tawbah', nameArabic: 'التوبة', verses: 129, type: 'Médinoise', description: 'Le Repentir' },
+      { id: 10, name: 'Yunus', nameArabic: 'يونس', verses: 109, type: 'Mecquoise', description: 'Jonas' },
+      { id: 11, name: 'Hud', nameArabic: 'هود', verses: 123, type: 'Mecquoise', description: 'Hud' },
+      { id: 12, name: 'Yusuf', nameArabic: 'يوسف', verses: 111, type: 'Mecquoise', description: 'Joseph' },
+      { id: 13, name: 'Ar-Ra\'d', nameArabic: 'الرعد', verses: 43, type: 'Médinoise', description: 'Le Tonnerre' },
+      { id: 14, name: 'Ibrahim', nameArabic: 'إبراهيم', verses: 52, type: 'Mecquoise', description: 'Abraham' },
+      { id: 15, name: 'Al-Hijr', nameArabic: 'الحجر', verses: 99, type: 'Mecquoise', description: 'Al-Hijr' },
+      { id: 16, name: 'An-Nahl', nameArabic: 'النحل', verses: 128, type: 'Mecquoise', description: 'Les Abeilles' },
+      { id: 17, name: 'Al-Isra', nameArabic: 'الإسراء', verses: 111, type: 'Mecquoise', description: 'Le Voyage nocturne' },
+      { id: 18, name: 'Al-Kahf', nameArabic: 'الكهف', verses: 110, type: 'Mecquoise', description: 'La Caverne' },
+      { id: 19, name: 'Maryam', nameArabic: 'مريم', verses: 98, type: 'Mecquoise', description: 'Marie' },
+      { id: 20, name: 'Ta-Ha', nameArabic: 'طه', verses: 135, type: 'Mecquoise', description: 'Ta-Ha' },
+      { id: 21, name: 'Al-Anbiya', nameArabic: 'الأنبياء', verses: 112, type: 'Mecquoise', description: 'Les Prophètes' },
+      { id: 22, name: 'Al-Hajj', nameArabic: 'الحج', verses: 78, type: 'Mixte', description: 'Le Pèlerinage' },
+      { id: 23, name: 'Al-Mu\'minun', nameArabic: 'المؤمنون', verses: 118, type: 'Mecquoise', description: 'Les Croyants' },
+      { id: 24, name: 'An-Nur', nameArabic: 'النور', verses: 64, type: 'Médinoise', description: 'La Lumière' },
+      { id: 25, name: 'Al-Furqan', nameArabic: 'الفرقان', verses: 77, type: 'Mecquoise', description: 'Le Discernement' },
+      { id: 26, name: 'Ash-Shu\'ara', nameArabic: 'الشعراء', verses: 227, type: 'Mecquoise', description: 'Les Poètes' },
+      { id: 27, name: 'An-Naml', nameArabic: 'النمل', verses: 93, type: 'Mecquoise', description: 'Les Fourmis' },
+      { id: 28, name: 'Al-Qasas', nameArabic: 'القصص', verses: 88, type: 'Mecquoise', description: 'Le Récit' },
+      { id: 29, name: 'Al-\'Ankabut', nameArabic: 'العنكبوت', verses: 69, type: 'Mecquoise', description: 'L\'Araignée' },
+      { id: 30, name: 'Ar-Rum', nameArabic: 'الروم', verses: 60, type: 'Mecquoise', description: 'Les Romains' },
+      { id: 31, name: 'Luqman', nameArabic: 'لقمان', verses: 34, type: 'Mecquoise', description: 'Luqman' },
+      { id: 32, name: 'As-Sajdah', nameArabic: 'السجدة', verses: 30, type: 'Mecquoise', description: 'La Prosternation' },
+      { id: 33, name: 'Al-Ahzab', nameArabic: 'الأحزاب', verses: 73, type: 'Médinoise', description: 'Les Coalisés' },
+      { id: 34, name: 'Saba', nameArabic: 'سبأ', verses: 54, type: 'Mecquoise', description: 'Saba' },
+      { id: 35, name: 'Fatir', nameArabic: 'فاطر', verses: 45, type: 'Mecquoise', description: 'Le Créateur' },
+      { id: 36, name: 'Ya-Sin', nameArabic: 'يس', verses: 83, type: 'Mecquoise', description: 'Ya-Sin' },
+      { id: 37, name: 'As-Saffat', nameArabic: 'الصافات', verses: 182, type: 'Mecquoise', description: 'Ceux qui se rangent en rangs' },
+      { id: 38, name: 'Sad', nameArabic: 'ص', verses: 88, type: 'Mecquoise', description: 'Sad' },
+      { id: 39, name: 'Az-Zumar', nameArabic: 'الزمر', verses: 75, type: 'Mecquoise', description: 'Les Groupes' },
+      { id: 40, name: 'Ghafir', nameArabic: 'غافر', verses: 85, type: 'Mecquoise', description: 'Le Pardonneur' },
+      { id: 41, name: 'Fussilat', nameArabic: 'فصلت', verses: 54, type: 'Mecquoise', description: 'Les Versets détaillés' },
+      { id: 42, name: 'Ash-Shura', nameArabic: 'الشورى', verses: 53, type: 'Mecquoise', description: 'La Consultation' },
+      { id: 43, name: 'Az-Zukhruf', nameArabic: 'الزخرف', verses: 89, type: 'Mecquoise', description: 'L\'Ornement' },
+      { id: 44, name: 'Ad-Dukhan', nameArabic: 'الدخان', verses: 59, type: 'Mecquoise', description: 'La Fumée' },
+      { id: 45, name: 'Al-Jathiyah', nameArabic: 'الجاثية', verses: 37, type: 'Mecquoise', description: 'L\'Agenouillée' },
+      { id: 46, name: 'Al-Ahqaf', nameArabic: 'الأحقاف', verses: 35, type: 'Mecquoise', description: 'Les Dunes de sable' },
+      { id: 47, name: 'Muhammad', nameArabic: 'محمد', verses: 38, type: 'Médinoise', description: 'Muhammad' },
+      { id: 48, name: 'Al-Fath', nameArabic: 'الفتح', verses: 29, type: 'Médinoise', description: 'La Victoire' },
+      { id: 49, name: 'Al-Hujurat', nameArabic: 'الحجرات', verses: 18, type: 'Médinoise', description: 'Les Appartements' },
+      { id: 50, name: 'Qaf', nameArabic: 'ق', verses: 45, type: 'Mecquoise', description: 'Qaf' },
+      { id: 51, name: 'Adh-Dhariyat', nameArabic: 'الذاريات', verses: 60, type: 'Mecquoise', description: 'Les Vents qui éparpillent' },
+      { id: 52, name: 'At-Tur', nameArabic: 'الطور', verses: 49, type: 'Mecquoise', description: 'La Montagne' },
+      { id: 53, name: 'An-Najm', nameArabic: 'النجم', verses: 62, type: 'Mecquoise', description: 'L\'Étoile' },
+      { id: 54, name: 'Al-Qamar', nameArabic: 'القمر', verses: 55, type: 'Mecquoise', description: 'La Lune' },
+      { id: 55, name: 'Ar-Rahman', nameArabic: 'الرحمن', verses: 78, type: 'Médinoise', description: 'Le Miséricordieux' },
+      { id: 56, name: 'Al-Waqi\'ah', nameArabic: 'الواقعة', verses: 96, type: 'Mecquoise', description: 'L\'Événement' },
+      { id: 57, name: 'Al-Hadid', nameArabic: 'الحديد', verses: 29, type: 'Médinoise', description: 'Le Fer' },
+      { id: 58, name: 'Al-Mujadilah', nameArabic: 'المجادلة', verses: 22, type: 'Médinoise', description: 'La Femme qui plaide' },
+      { id: 59, name: 'Al-Hashr', nameArabic: 'الحشر', verses: 24, type: 'Médinoise', description: 'L\'Exode' },
+      { id: 60, name: 'Al-Mumtahanah', nameArabic: 'الممتحنة', verses: 13, type: 'Médinoise', description: 'L\'Éprouvée' },
+      { id: 61, name: 'As-Saff', nameArabic: 'الصف', verses: 14, type: 'Médinoise', description: 'Le Rang' },
+      { id: 62, name: 'Al-Jumu\'ah', nameArabic: 'الجمعة', verses: 11, type: 'Médinoise', description: 'Le Vendredi' },
+      { id: 63, name: 'Al-Munafiqun', nameArabic: 'المنافقون', verses: 11, type: 'Médinoise', description: 'Les Hypocrites' },
+      { id: 64, name: 'At-Taghabun', nameArabic: 'التغابن', verses: 18, type: 'Médinoise', description: 'La Perte mutuelle' },
+      { id: 65, name: 'At-Talaq', nameArabic: 'الطلاق', verses: 12, type: 'Médinoise', description: 'Le Divorce' },
+      { id: 66, name: 'At-Tahrim', nameArabic: 'التحريم', verses: 12, type: 'Médinoise', description: 'L\'Interdiction' },
+      { id: 67, name: 'Al-Mulk', nameArabic: 'الملك', verses: 30, type: 'Mecquoise', description: 'La Royauté' },
+      { id: 68, name: 'Al-Qalam', nameArabic: 'القلم', verses: 52, type: 'Mecquoise', description: 'La Plume' },
+      { id: 69, name: 'Al-Haqqah', nameArabic: 'الحاقة', verses: 52, type: 'Mecquoise', description: 'L\'Inévitable' },
+      { id: 70, name: 'Al-Ma\'arij', nameArabic: 'المعارج', verses: 44, type: 'Mecquoise', description: 'Les Degrés' },
+      { id: 71, name: 'Nuh', nameArabic: 'نوح', verses: 28, type: 'Mecquoise', description: 'Noé' },
+      { id: 72, name: 'Al-Jinn', nameArabic: 'الجن', verses: 28, type: 'Mecquoise', description: 'Les Génies' },
+      { id: 73, name: 'Al-Muzzammil', nameArabic: 'المزمل', verses: 20, type: 'Mecquoise', description: 'L\'Enveloppé' },
+      { id: 74, name: 'Al-Muddaththir', nameArabic: 'المدثر', verses: 56, type: 'Mecquoise', description: 'Le Couvert d\'un manteau' },
+      { id: 75, name: 'Al-Qiyamah', nameArabic: 'القيامة', verses: 40, type: 'Mecquoise', description: 'La Résurrection' },
+      { id: 76, name: 'Ad-Dahr', nameArabic: 'الدهر', verses: 31, type: 'Médinoise', description: 'Le Temps' },
+      { id: 77, name: 'Al-Mursalat', nameArabic: 'المرسلات', verses: 50, type: 'Mecquoise', description: 'Ceux qui sont envoyés' },
+      { id: 78, name: 'An-Naba', nameArabic: 'النبأ', verses: 40, type: 'Mecquoise', description: 'La Nouvelle' },
+      { id: 79, name: 'An-Nazi\'at', nameArabic: 'النازعات', verses: 46, type: 'Mecquoise', description: 'Ceux qui arrachent' },
+      { id: 80, name: 'Abasa', nameArabic: 'عبس', verses: 42, type: 'Mecquoise', description: 'Il s\'est renfrogné' },
+      { id: 81, name: 'At-Takwir', nameArabic: 'التكوير', verses: 29, type: 'Mecquoise', description: 'L\'Obscurcissement' },
+      { id: 82, name: 'Al-Infitar', nameArabic: 'الانفطار', verses: 19, type: 'Mecquoise', description: 'La Rupture' },
+      { id: 83, name: 'Al-Mutaffifin', nameArabic: 'المطففين', verses: 36, type: 'Mecquoise', description: 'Les Fraudeurs' },
+      { id: 84, name: 'Al-Inshiqaq', nameArabic: 'الانشقاق', verses: 25, type: 'Mecquoise', description: 'La Fente' },
+      { id: 85, name: 'Al-Buruj', nameArabic: 'البروج', verses: 22, type: 'Mecquoise', description: 'Les Constellations' },
+      { id: 86, name: 'At-Tariq', nameArabic: 'الطارق', verses: 17, type: 'Mecquoise', description: 'L\'Astre du matin' },
+      { id: 87, name: 'Al-A\'la', nameArabic: 'الأعلى', verses: 19, type: 'Mecquoise', description: 'Le Très-Haut' },
+      { id: 88, name: 'Al-Ghashiyah', nameArabic: 'الغاشية', verses: 26, type: 'Mecquoise', description: 'L\'Enveloppante' },
+      { id: 89, name: 'Al-Fajr', nameArabic: 'الفجر', verses: 30, type: 'Mecquoise', description: 'L\'Aube' },
+      { id: 90, name: 'Al-Balad', nameArabic: 'البلد', verses: 20, type: 'Mecquoise', description: 'La Cité' },
+      { id: 91, name: 'Ash-Shams', nameArabic: 'الشمس', verses: 15, type: 'Mecquoise', description: 'Le Soleil' },
+      { id: 92, name: 'Al-Layl', nameArabic: 'الليل', verses: 21, type: 'Mecquoise', description: 'La Nuit' },
+      { id: 93, name: 'Ad-Dhuha', nameArabic: 'الضحى', verses: 11, type: 'Mecquoise', description: 'La Clarté du matin' },
+      { id: 94, name: 'Ash-Sharh', nameArabic: 'الشرح', verses: 8, type: 'Mecquoise', description: 'L\'Ouverture de la poitrine' },
+      { id: 95, name: 'At-Tin', nameArabic: 'التين', verses: 8, type: 'Mecquoise', description: 'Le Figuier' },
+      { id: 96, name: 'Al-Alaq', nameArabic: 'العلق', verses: 19, type: 'Mecquoise', description: 'L\'Adhérence' },
+      { id: 97, name: 'Al-Qadr', nameArabic: 'القدر', verses: 5, type: 'Mecquoise', description: 'La Puissance' },
+      { id: 98, name: 'Al-Bayyinah', nameArabic: 'البينة', verses: 8, type: 'Médinoise', description: 'La Preuve' },
+      { id: 99, name: 'Az-Zalzalah', nameArabic: 'الزلزلة', verses: 8, type: 'Médinoise', description: 'Le Tremblement' },
+      { id: 100, name: 'Al-Adiyat', nameArabic: 'العاديات', verses: 11, type: 'Mecquoise', description: 'Les Coursiers' },
+      { id: 101, name: 'Al-Qari\'ah', nameArabic: 'القارعة', verses: 11, type: 'Mecquoise', description: 'La Catastrophe' },
+      { id: 102, name: 'At-Takathur', nameArabic: 'التكاثر', verses: 8, type: 'Mecquoise', description: 'La Course aux richesses' },
+      { id: 103, name: 'Al-Asr', nameArabic: 'العصر', verses: 3, type: 'Mecquoise', description: 'Le Temps' },
+      { id: 104, name: 'Al-Humazah', nameArabic: 'الهمزة', verses: 9, type: 'Mecquoise', description: 'Le Médisant' },
+      { id: 105, name: 'Al-Fil', nameArabic: 'الفيل', verses: 5, type: 'Mecquoise', description: 'L\'Éléphant' },
+      { id: 106, name: 'Quraysh', nameArabic: 'قريش', verses: 4, type: 'Mecquoise', description: 'Quraysh' },
+      { id: 107, name: 'Al-Ma\'un', nameArabic: 'الماعون', verses: 7, type: 'Mecquoise', description: 'L\'Ustensile' },
+      { id: 108, name: 'Al-Kawthar', nameArabic: 'الكوثر', verses: 3, type: 'Mecquoise', description: 'L\'Abondance' },
+      { id: 109, name: 'Al-Kafirun', nameArabic: 'الكافرون', verses: 6, type: 'Mecquoise', description: 'Les Mécréants' },
+      { id: 110, name: 'An-Nasr', nameArabic: 'النصر', verses: 3, type: 'Médinoise', description: 'Le Secours' },
+      { id: 111, name: 'Al-Masad', nameArabic: 'المسد', verses: 5, type: 'Mecquoise', description: 'Les Fibres' },
+      { id: 112, name: 'Al-Ikhlas', nameArabic: 'الإخلاص', verses: 4, type: 'Mecquoise', description: 'L\'Unicité' },
+      { id: 113, name: 'Al-Falaq', nameArabic: 'الفلق', verses: 5, type: 'Mecquoise', description: 'L\'Aube' },
+      { id: 114, name: 'An-Nas', nameArabic: 'الناس', verses: 6, type: 'Mecquoise', description: 'Les Gens' }
+    ]);
+    
+    const [reciters] = useState([
+      { id: 1, name: 'Abdul Rahman Al-Sudais', nameArabic: 'عبد الرحمن السديس' },
+      { id: 2, name: 'Mishary Al-Afasy', nameArabic: 'مشاري العفاسي' },
+      { id: 3, name: 'Maher Al-Muaiqly', nameArabic: 'ماهر المعيقلي' },
+      { id: 4, name: 'Saad Al-Ghamidi', nameArabic: 'سعد الغامدي' }
+    ]);
+    
+    const [favorites, setFavorites] = useState([]);
+    const [currentSourate, setCurrentSourate] = useState(null);
+    const [currentReciter, setCurrentReciter] = useState(reciters[0]);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [duration, setDuration] = useState(0);
+    
+    const toggleFavorite = useCallback(function(sourate) {
+      setFavorites(function(prev) {
+        const exists = prev.some(function(fav) { return fav.id === sourate.id; });
+        if (exists) {
+          return prev.filter(function(fav) { return fav.id !== sourate.id; });
+        } else {
+          return prev.concat([sourate]);
+        }
+      });
+    }, []);
+    
+    const isFavorite = useCallback(function(sourateId) {
+      return favorites.some(function(fav) { return fav.id === sourateId; });
+    }, [favorites]);
+    
+    const playSourate = useCallback(function(sourate) {
+      setCurrentSourate(sourate);
+      setIsPlaying(true);
+      setCurrentTime(0);
+      setDuration(Math.floor(Math.random() * 1800) + 300);
+    }, []);
+    
+    const togglePlayPause = useCallback(function() {
+      setIsPlaying(function(prev) { return !prev; });
+    }, []);
+    
+    const value = useMemo(function() {
+      return {
+        sourates: sourates,
+        reciters: reciters,
+        favorites: favorites,
+        currentSourate: currentSourate,
+        currentReciter: currentReciter,
+        isPlaying: isPlaying,
+        currentTime: currentTime,
+        duration: duration,
+        toggleFavorite: toggleFavorite,
+        isFavorite: isFavorite,
+        playSourate: playSourate,
+        togglePlayPause: togglePlayPause,
+        setCurrentReciter: setCurrentReciter,
+        setCurrentTime: setCurrentTime
+      };
+    }, [sourates, reciters, favorites, currentSourate, currentReciter, isPlaying, currentTime, duration, toggleFavorite, isFavorite, playSourate, togglePlayPause]);
+    
+    return React.createElement(AppDataContext.Provider, { value: value }, props.children);
+  };
+  const useAppData = function() { return useContext(AppDataContext); };
+
+  const getColorByType = function(type) {
+    var colors = {
+      'Mecquoise': '#06B6D4',
+      'Médinoise': '#10B981',
+      'Mixte': '#F59E0B'
+    };
+    return colors[type] || '#3B82F6';
+  };
+
+  const SourateCard = function(props) {
+    const themeContext = useTheme();
+    const theme = themeContext.theme;
+    const appData = useAppData();
+    const sourate = props.sourate;
+    const onPress = props.onPress;
+    const typeColor = getColorByType(sourate.type);
+    
+    const handleFavorite = useCallback(function() {
+      appData.toggleFavorite(sourate);
+    }, [sourate, appData.toggleFavorite]);
+    
+    const handlePlay = useCallback(function() {
+      appData.playSourate(sourate);
+      if (onPress) onPress();
+    }, [sourate, appData.playSourate, onPress]);
+    
+    return React.createElement(View, { 
+      style: [styles.sourateCard, { backgroundColor: theme.colors.card, borderColor: theme.colors.border, borderLeftColor: typeColor, borderLeftWidth: 4 }],
+      componentId: 'sourate-card-' + sourate.id 
+    },
+      React.createElement(View, { style: styles.sourateHeader },
+        React.createElement(View, { style: [styles.sourateNumber, { backgroundColor: typeColor + '20' }] },
+          React.createElement(Text, { 
+            style: [styles.sourateNumberText, { color: typeColor }] 
+          }, sourate.id.toString())
+        ),
+        React.createElement(View, { style: styles.sourateInfo },
+          React.createElement(Text, { 
+            style: [styles.sourateName, { color: theme.colors.textPrimary }] 
+          }, sourate.name),
+          React.createElement(Text, { 
+            style: [styles.sourateNameArabic, { color: theme.colors.textPrimary }] 
+          }, sourate.nameArabic)
+        ),
+        React.createElement(TouchableOpacity, { 
+          style: styles.favoriteButton,
+          onPress: handleFavorite,
+          componentId: 'favorite-btn-' + sourate.id
+        },
+          React.createElement(MaterialIcons, { 
+            name: appData.isFavorite(sourate.id) ? 'favorite' : 'favorite-border',
+            size: 24,
+            color: appData.isFavorite(sourate.id) ? '#EF4444' : typeColor
+          })
+        )
+      ),
+      React.createElement(View, { style: styles.sourateDetails },
+        React.createElement(View, { style: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 } },
+          React.createElement(View, { style: [styles.typeTag, { backgroundColor: typeColor + '20' }] },
+            React.createElement(Text, { 
+              style: [styles.typeTagText, { color: typeColor }] 
+            }, sourate.type)
+          )
+        ),
+        React.createElement(Text, { 
+          style: [styles.sourateVerses, { color: theme.colors.textSecondary }] 
+        }, sourate.verses + ' versets'),
+        React.createElement(Text, { 
+          style: [styles.sourateDescription, { color: theme.colors.textSecondary }] 
+        }, sourate.description)
+      ),
+      React.createElement(TouchableOpacity, { 
+        style: [styles.playButton, { backgroundColor: typeColor }],
+        onPress: handlePlay,
+        componentId: 'play-btn-' + sourate.id
+      },
+        React.createElement(MaterialIcons, { 
+          name: 'play-arrow',
+          size: 20,
+          color: '#FFFFFF'
+        }),
+        React.createElement(Text, { 
+          style: styles.playButtonText 
+        }, 'Écouter')
+      )
+    );
+  };
+
+  const HomeScreen = function() {
+    const themeContext = useTheme();
+    const theme = themeContext.theme;
+    const appData = useAppData();
+    const [searchQuery, setSearchQuery] = useState('');
+    
+    const filteredSourates = useMemo(function() {
+      if (!searchQuery.trim()) return appData.sourates;
+      return appData.sourates.filter(function(sourate) {
+        return sourate.name.toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1 ||
+               sourate.nameArabic.indexOf(searchQuery) !== -1;
+      });
+    }, [appData.sourates, searchQuery]);
+    
+    return React.createElement(View, { 
+      style: [styles.container, { backgroundColor: theme.colors.background }],
+      componentId: 'home-screen'
+    },
+      React.createElement(View, { style: [styles.header, { backgroundImage: 'linear-gradient(135deg, ' + theme.colors.primary + ' 0%, ' + '#06B6D4' + ' 100%)' }] },
+        React.createElement(Text, { style: styles.headerTitle }, 'Quran Listener'),
+        React.createElement(Text, { style: styles.headerSubtitle }, 'Écoutez le Saint Coran')
+      ),
+      React.createElement(View, { style: [styles.searchContainer, { backgroundColor: theme.colors.card }] },
+        React.createElement(MaterialIcons, { 
+          name: 'search',
+          size: 20,
+          color: theme.colors.primary,
+          style: styles.searchIcon
+        }),
+        React.createElement(TextInput, { 
+          style: [styles.searchInput, { color: theme.colors.textPrimary }],
+          placeholder: 'Rechercher une sourate...',
+          placeholderTextColor: theme.colors.textSecondary,
+          value: searchQuery,
+          onChangeText: setSearchQuery,
+          componentId: 'search-input'
+        })
+      ),
+      React.createElement(FlatList, {
+        data: filteredSourates,
+        keyExtractor: function(item) { return item.id.toString(); },
+        renderItem: function(item) {
+          return React.createElement(SourateCard, { 
+            sourate: item.item,
+            key: item.item.id 
+          });
+        },
+        contentContainerStyle: { 
+          paddingBottom: Platform.OS === 'web' ? 90 : 100,
+          paddingHorizontal: 16
+        },
+        showsVerticalScrollIndicator: false,
+        componentId: 'sourates-list'
+      })
+    );
+  };
+
+  const FavoritesScreen = function() {
+    const themeContext = useTheme();
+    const theme = themeContext.theme;
+    const appData = useAppData();
+    
+    if (appData.favorites.length === 0) {
+      return React.createElement(View, { 
+        style: [styles.container, styles.emptyState, { backgroundColor: theme.colors.background }],
+        componentId: 'favorites-empty'
+      },
+        React.createElement(MaterialIcons, { 
+          name: 'favorite-border',
+          size: 64,
+          color: theme.colors.primary
+        }),
+        React.createElement(Text, { 
+          style: [styles.emptyStateTitle, { color: theme.colors.textPrimary }] 
+        }, 'Aucun favori'),
+        React.createElement(Text, { 
+          style: [styles.emptyStateText, { color: theme.colors.textSecondary }] 
+        }, 'Marquez vos sourates préférées comme favorites pour les retrouver ici')
+      );
+    }
+    
+    return React.createElement(View, { 
+      style: [styles.container, { backgroundColor: theme.colors.background }],
+      componentId: 'favorites-screen'
+    },
+      React.createElement(View, { style: [styles.header, { backgroundColor: '#EC4899' }] },
+        React.createElement(Text, { style: styles.headerTitle }, 'Mes Favoris'),
+        React.createElement(Text, { style: styles.headerSubtitle }, appData.favorites.length + ' sourate(s) favorite(s)')
+      ),
+      React.createElement(FlatList, {
+        data: appData.favorites,
+        keyExtractor: function(item) { return item.id.toString(); },
+        renderItem: function(item) {
+          return React.createElement(SourateCard, { 
+            sourate: item.item,
+            key: item.item.id 
+          });
+        },
+        contentContainerStyle: { 
+          paddingBottom: Platform.OS === 'web' ? 90 : 100,
+          paddingHorizontal: 16
+        },
+        showsVerticalScrollIndicator: false,
+        componentId: 'favorites-list'
+      })
+    );
+  };
+
+  const PlayerScreen = function() {
+    const themeContext = useTheme();
+    const theme = themeContext.theme;
+    const appData = useAppData();
+    
+    useEffect(function() {
+      if (appData.isPlaying && appData.currentSourate) {
+        const interval = setInterval(function() {
+          appData.setCurrentTime(function(prev) {
+            if (prev >= appData.duration) {
+              return appData.duration;
+            }
+            return prev + 1;
+          });
+        }, 1000);
+        return function() { clearInterval(interval); };
+      }
+    }, [appData.isPlaying, appData.duration]);
+    
+    const formatTime = useCallback(function(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return mins + ':' + (secs < 10 ? '0' : '') + secs;
+    }, []);
+    
+    const progress = useMemo(function() {
+      if (appData.duration === 0) return 0;
+      return appData.currentTime / appData.duration;
+    }, [appData.currentTime, appData.duration]);
+    
+    if (!appData.currentSourate) {
+      return React.createElement(View, { 
+        style: [styles.container, styles.emptyState, { backgroundColor: theme.colors.background }],
+        componentId: 'player-empty'
+      },
+        React.createElement(MaterialIcons, { 
+          name: 'music-note',
+          size: 64,
+          color: theme.colors.primary
+        }),
+        React.createElement(Text, { 
+          style: [styles.emptyStateTitle, { color: theme.colors.textPrimary }] 
+        }, 'Aucune lecture en cours'),
+        React.createElement(Text, { 
+          style: [styles.emptyStateText, { color: theme.colors.textSecondary }] 
+        }, 'Sélectionnez une sourate pour commencer l\'écoute')
+      );
+    }
+    
+    const typeColor = getColorByType(appData.currentSourate.type);
+    
+    return React.createElement(View, { 
+      style: [styles.container, { backgroundColor: theme.colors.background }],
+      componentId: 'player-screen'
+    },
+      React.createElement(View, { style: [styles.playerContainer, { backgroundColor: theme.colors.card, borderTopColor: typeColor, borderTopWidth: 4 }] },
+        React.createElement(View, { style: styles.sourateInfoLarge },
+          React.createElement(Text, { 
+            style: [styles.sourateNameLarge, { color: theme.colors.textPrimary }] 
+          }, appData.currentSourate.name),
+          React.createElement(Text, { 
+            style: [styles.sourateNameArabicLarge, { color: theme.colors.textPrimary }] 
+          }, appData.currentSourate.nameArabic),
+          React.createElement(View, { style: [styles.playerTypeTag, { backgroundColor: typeColor + '20' }] },
+            React.createElement(Text, { 
+              style: [{ color: typeColor, fontWeight: '600' }] 
+            }, appData.currentSourate.type)
+          ),
+          React.createElement(Text, { 
+            style: [styles.reciterName, { color: theme.colors.textSecondary }] 
+          }, 'Récité par ' + appData.currentReciter.name)
+        ),
+        React.createElement(View, { style: styles.progressContainer },
+          React.createElement(View, { style: [styles.progressBar, { backgroundColor: theme.colors.border }] },
+            React.createElement(View, { 
+              style: [
+                styles.progressFill,
+                { 
+                  backgroundColor: typeColor,
+                  width: (progress * 100) + '%'
+                }
+              ]
+            })
+          ),
+          React.createElement(View, { style: styles.timeContainer },
+            React.createElement(Text, { 
+              style: [styles.timeText, { color: theme.colors.textSecondary }] 
+            }, formatTime(appData.currentTime)),
+            React.createElement(Text, { 
+              style: [styles.timeText, { color: theme.colors.textSecondary }] 
+            }, formatTime(appData.duration))
+          )
+        ),
+        React.createElement(View, { style: styles.playerControls },
+          React.createElement(TouchableOpacity, { 
+            style: styles.controlButton,
+            componentId: 'previous-btn'
+          },
+            React.createElement(MaterialIcons, { 
+              name: 'skip-previous',
+              size: 32,
+              color: typeColor
+            })
+          ),
+          React.createElement(TouchableOpacity, { 
+            style: [styles.playPauseButton, { backgroundColor: typeColor }],
+            onPress: appData.togglePlayPause,
+            componentId: 'play-pause-btn'
+          },
+            React.createElement(MaterialIcons, { 
+              name: appData.isPlaying ? 'pause' : 'play-arrow',
+              size: 40,
+              color: '#FFFFFF'
+            })
+          ),
+          React.createElement(TouchableOpacity, { 
+            style: styles.controlButton,
+            componentId: 'next-btn'
+          },
+            React.createElement(MaterialIcons, { 
+              name: 'skip-next',
+              size: 32,
+              color: typeColor
+            })
+          )
+        )
+      ),
+      React.createElement(View, { style: [styles.reciterSelector, { backgroundColor: theme.colors.card }] },
+        React.createElement(Text, { 
+          style: [styles.sectionTitle, { color: theme.colors.textPrimary }] 
+        }, 'Récitateur'),
+        React.createElement(ScrollView, { 
+          horizontal: true,
+          showsHorizontalScrollIndicator: false,
+          contentContainerStyle: styles.recitersContainer
+        },
+          appData.reciters.map(function(reciter) {
+            const isSelected = appData.currentReciter.id === reciter.id;
+            return React.createElement(TouchableOpacity, {
+              key: reciter.id,
+              style: [
+                styles.reciterCard,
+                { 
+                  backgroundColor: isSelected ? typeColor : theme.colors.background,
+                  borderColor: isSelected ? typeColor : theme.colors.border
+                }
+              ],
+              onPress: function() { appData.setCurrentReciter(reciter); },
+              componentId: 'reciter-' + reciter.id
+            },
+              React.createElement(Text, { 
+                style: [
+                  styles.reciterCardName,
+                  { color: isSelected ? '#FFFFFF' : theme.colors.textPrimary }
+                ] 
+              }, reciter.name),
+              React.createElement(Text, { 
+                style: [
+                  styles.reciterCardNameArabic,
+                  { color: isSelected ? '#FFFFFF' : theme.colors.textSecondary }
+                ] 
+              }, reciter.nameArabic)
+            );
+          })
+        )
+      )
+    );
+  };
+
+  const SettingsScreen = function() {
+    const themeContext = useTheme();
+    const theme = themeContext.theme;
+    const appData = useAppData();
+    
+    const handleAbout = useCallback(function() {
+      const message = 'Quran Listener v1.0\n\nUne application pour écouter le Saint Coran avec les récitateurs les plus célèbres.\n\nDéveloppé avec amour pour la communauté musulmane.';
+      if (Platform.OS === 'web') {
+        window.alert(message);
+      } else {
+        Alert.alert('À propos', message);
+      }
+    }, []);
+    
+    return React.createElement(View, { 
+      style: [styles.container, { backgroundColor: theme.colors.background }],
+      componentId: 'settings-screen'
+    },
+      React.createElement(View, { style: [styles.header, { backgroundColor: '#A855F7' }] },
+        React.createElement(Text, { style: styles.headerTitle }, 'Paramètres'),
+        React.createElement(Text, { style: styles.headerSubtitle }, 'Configuration de l\'application')
+      ),
+      React.createElement(ScrollView, { 
+        contentContainerStyle: { 
+          paddingBottom: Platform.OS === 'web' ? 90 : 100,
+          paddingHorizontal: 16
+        }
+      },
+        React.createElement(View, { style: [styles.settingsSection, { backgroundColor: theme.colors.card }] },
+          React.createElement(Text, { 
+            style: [styles.sectionTitle, { color: theme.colors.textPrimary }] 
+          }, 'Statistiques'),
+          React.createElement(View, { style: styles.statItem },
+            React.createElement(Text, { 
+              style: [styles.statLabel, { color: theme.colors.textSecondary }] 
+            }, 'Sourates disponibles'),
+            React.createElement(View, { style: { backgroundColor: '#06B6D4', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8 } },
+              React.createElement(Text, { 
+                style: [styles.statValue, { color: '#FFFFFF' }] 
+              }, appData.sourates.length.toString())
+            )
+          ),
+          React.createElement(View, { style: styles.statItem },
+            React.createElement(Text, { 
+              style: [styles.statLabel, { color: theme.colors.textSecondary }] 
+            }, 'Récitateurs disponibles'),
+            React.createElement(View, { style: { backgroundColor: '#10B981', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8 } },
+              React.createElement(Text, { 
+                style: [styles.statValue, { color: '#FFFFFF' }] 
+              }, appData.reciters.length.toString())
+            )
+          ),
+          React.createElement(View, { style: styles.statItem },
+            React.createElement(Text, { 
+              style: [styles.statLabel, { color: theme.colors.textSecondary }] 
+            }, 'Favoris'),
+            React.createElement(View, { style: { backgroundColor: '#EC4899', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8 } },
+              React.createElement(Text, { 
+                style: [styles.statValue, { color: '#FFFFFF' }] 
+              }, appData.favorites.length.toString())
+            )
+          )
+        ),
+        React.createElement(View, { style: [styles.settingsSection, { backgroundColor: theme.colors.card }] },
+          React.createElement(Text, { 
+            style: [styles.sectionTitle, { color: theme.colors.textPrimary }] 
+          }, 'Apparence'),
+          React.createElement(TouchableOpacity, { 
+            style: styles.settingsItem,
+            onPress: themeContext.toggleDarkMode,
+            componentId: 'dark-mode-toggle'
+          },
+            React.createElement(View, { style: styles.settingsItemContent },
+              React.createElement(MaterialIcons, { 
+                name: themeContext.darkMode ? 'light-mode' : 'dark-mode',
+                size: 24,
+                color: themeContext.darkMode ? '#F59E0B' : '#3B82F6'
+              }),
+              React.createElement(Text, { 
+                style: [styles.settingsItemText, { color: theme.colors.textPrimary }] 
+              }, themeContext.darkMode ? 'Mode clair' : 'Mode sombre')
+            ),
+            React.createElement(MaterialIcons, { 
+              name: 'chevron-right',
+              size: 24,
+              color: theme.colors.textSecondary
+            })
+          )
+        ),
+        React.createElement(View, { style: [styles.settingsSection, { backgroundColor: theme.colors.card }] },
+          React.createElement(Text, { 
+            style: [styles.sectionTitle, { color: theme.colors.textPrimary }] 
+          }, 'Support'),
+          React.createElement(TouchableOpacity, { 
+            style: styles.settingsItem,
+            onPress: handleAbout,
+            componentId: 'about-btn'
+          },
+            React.createElement(View, { style: styles.settingsItemContent },
+              React.createElement(MaterialIcons, { 
+                name: 'info',
+                size: 24,
+                color: '#06B6D4'
+              }),
+              React.createElement(Text, { 
+                style: [styles.settingsItemText, { color: theme.colors.textPrimary }] 
+              }, 'À propos')
+            ),
+            React.createElement(MaterialIcons, { 
+              name: 'chevron-right',
+              size: 24,
+              color: theme.colors.textSecondary
+            })
+          )
+        )
+      )
+    );
+  };
+
+  const TabNavigator = function() {
+    const themeContext = useTheme();
+    const theme = themeContext.theme;
+    
+    return React.createElement(View, { style: { flex: 1, width: '100%', height: '100%', overflow: 'hidden' } },
+      React.createElement(Tab.Navigator, {
+        screenOptions: {
+          headerShown: false,
+          tabBarStyle: {
+            position: 'absolute',
+            bottom: 0,
+            backgroundColor: theme.colors.card,
+            borderTopColor: theme.colors.border,
+            borderTopWidth: 1,
+            paddingBottom: Platform.OS === 'ios' ? 20 : 10,
+            height: Platform.OS === 'ios' ? 90 : 70
+          },
+          tabBarActiveTintColor: theme.colors.primary,
+          tabBarInactiveTintColor: theme.colors.textSecondary,
+          tabBarLabelStyle: {
+            fontSize: 12,
+            fontWeight: '500'
+          }
+        }
+      },
+        React.createElement(Tab.Screen, {
+          name: 'Accueil',
+          component: HomeScreen,
+          options: {
+            tabBarIcon: function(props) {
+              return React.createElement(MaterialIcons, {
+                name: 'home',
+                size: 24,
+                color: props.color
+              });
+            }
+          }
+        }),
+        React.createElement(Tab.Screen, {
+          name: 'Favoris',
+          component: FavoritesScreen,
+          options: {
+            tabBarIcon: function(props) {
+              return React.createElement(MaterialIcons, {
+                name: 'favorite',
+                size: 24,
+                color: props.color
+              });
+            }
+          }
+        }),
+        React.createElement(Tab.Screen, {
+          name: 'Lecteur',
+          component: PlayerScreen,
+          options: {
+            tabBarIcon: function(props) {
+              return React.createElement(MaterialIcons, {
+                name: 'play-circle-filled',
+                size: 24,
+                color: props.color
+              });
+            }
+          }
+        }),
+        React.createElement(Tab.Screen, {
+          name: 'Paramètres',
+          component: SettingsScreen,
+          options: {
+            tabBarIcon: function(props) {
+              return React.createElement(MaterialIcons, {
+                name: 'settings',
+                size: 24,
+                color: props.color
+              });
+            }
+          }
+        })
+      )
+    );
+  };
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1
+    },
+    header: {
+      paddingTop: Platform.OS === 'ios' ? 50 : 40,
+      paddingHorizontal: 16,
+      paddingBottom: 20,
+      borderBottomLeftRadius: 16,
+      borderBottomRightRadius: 16
+    },
+    headerTitle: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: '#FFFFFF',
+      marginBottom: 4
+    },
+    headerSubtitle: {
+      fontSize: 16,
+      color: '#FFFFFF',
+      opacity: 0.9
+    },
+    searchContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      margin: 16,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      borderRadius: 12,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+      borderWidth: 1.5,
+      borderColor: '#3B82F6'
+    },
+    searchIcon: {
+      marginRight: 8
+    },
+    searchInput: {
+      flex: 1,
+      fontSize: 16,
+      paddingVertical: 4
+    },
+    sourateCard: {
+      marginHorizontal: 16,
+      marginVertical: 6,
+      padding: 16,
+      borderRadius: 16,
+      borderWidth: 1,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3
+    },
+    sourateHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 12
+    },
+    sourateNumber: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 12
+    },
+    sourateNumberText: {
+      fontSize: 16,
+      fontWeight: 'bold'
+    },
+    sourateInfo: {
+      flex: 1
+    },
+    sourateName: {
+      fontSize: 18,
+      fontWeight: '600',
+      marginBottom: 2
+    },
+    sourateNameArabic: {
+      fontSize: 16,
+      fontWeight: '500'
+    },
+    favoriteButton: {
+      padding: 8
+    },
+    typeTag: {
+      paddingHorizontal: 12,
+      paddingVertical: 4,
+      borderRadius: 8
+    },
+    typeTagText: {
+      fontSize: 12,
+      fontWeight: '600'
+    },
+    sourateDetails: {
+      marginBottom: 12
+    },
+    sourateVerses: {
+      fontSize: 14,
+      marginBottom: 4
+    },
+    sourateDescription: {
+      fontSize: 14
+    },
+    playButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      borderRadius: 12
+    },
+    playButtonText: {
+      color: '#FFFFFF',
+      fontSize: 16,
+      fontWeight: '600',
+      marginLeft: 8
+    },
+    emptyState: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: 32
+    },
+    emptyStateTitle: {
+      fontSize: 20,
+      fontWeight: '600',
+      marginTop: 16,
+      marginBottom: 8
+    },
+    emptyStateText: {
+      fontSize: 16,
+      textAlign: 'center',
+      lineHeight: 24
+    },
+    playerContainer: {
+      margin: 16,
+      padding: 24,
+      borderRadius: 16,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.15,
+      shadowRadius: 8,
+      elevation: 6
+    },
+    sourateInfoLarge: {
+      alignItems: 'center',
+      marginBottom: 32
+    },
+    sourateNameLarge: {
+      fontSize: 22,
+      fontWeight: 'bold',
+      marginBottom: 8
+    },
+    sourateNameArabicLarge: {
+      fontSize: 20,
+      fontWeight: '500',
+      marginBottom: 16
+    },
+    playerTypeTag: {
+      paddingHorizontal: 16,
+      paddingVertical: 6,
+      borderRadius: 8,
+      marginBottom: 12
+    },
+    reciterName: {
+      fontSize: 16
+    },
+    progressContainer: {
+      marginBottom: 32
+    },
+    progressBar: {
+      height: 4,
+      borderRadius: 2,
+      marginBottom: 12
+    },
+    progressFill: {
+      height: '100%',
+      borderRadius: 2
+    },
+    timeContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between'
+    },
+    timeText: {
+      fontSize: 14
+    },
+    playerControls: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    controlButton: {
+      padding: 16,
+      marginHorizontal: 20
+    },
+    playPauseButton: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    reciterSelector: {
+      margin: 16,
+      padding: 16,
+      borderRadius: 16,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      marginBottom: 16
+    },
+    recitersContainer: {
+      paddingVertical: 8
+    },
+    reciterCard: {
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      marginRight: 12,
+      borderRadius: 12,
+      borderWidth: 1,
+      minWidth: 120
+    },
+    reciterCardName: {
+      fontSize: 14,
+      fontWeight: '600',
+      marginBottom: 4
+    },
+    reciterCardNameArabic: {
+      fontSize: 12
+    },
+    settingsSection: {
+      margin: 16,
+      marginBottom: 8,
+      borderRadius: 16,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3
+    },
+    settingsItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 16,
+      paddingVertical: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: '#F3F4F6'
+    },
+    settingsItemContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flex: 1
+    },
+    settingsItemText: {
+      fontSize: 16,
+      marginLeft: 12
+    },
+    statItem: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: '#F3F4F6'
+    },
+    statLabel: {
+      fontSize: 16
+    },
+    statValue: {
+      fontSize: 16,
+      fontWeight: '600'
+    }
+  });
+
+  return React.createElement(ThemeProvider, null,
+    React.createElement(AppDataProvider, null,
+      React.createElement(View, { style: { flex: 1, width: '100%', height: '100%' } },
+        React.createElement(StatusBar, { barStyle: 'dark-content' }),
+        React.createElement(TabNavigator)
+      )
+    )
+  );
+};
+return ComponentFunction;
