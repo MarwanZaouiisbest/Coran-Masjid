@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Sourates du Coran</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f2027;
+      color: white;
+      text-align: center;
+    }
+
+    h1 {
+      padding: 40px 20px;
+    }
+
+    .sourates {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      padding: 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .sourate {
+      background: #203a43;
+      padding: 15px;
+      border-radius: 8px;
+      transition: transform 0.2s, background 0.2s;
+      cursor: pointer;
+    }
+
+    .sourate:hover {
+      background: #2c5364;
+      transform: scale(1.05);
+    }
+
+    a {
+      text-decoration: none;
+      color: white;
+    }
+
+    footer {
+      margin: 40px 0;
+      font-size: 14px;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>📖 Sourates du Coran</h1>
+
+  <div class="sourates">
+    <a href="#"><div class="sourate">1. Al-Fatiha</div></a>
+    <a href="#"><div class="sourate">2. Al-Baqara</div></a>
+    <a href="#"><div class="sourate">3. Aal-E-Imran</div></a>
+    <a href="#"><div class="sourate">4. An-Nisa</div></a>
+    <a href="#"><div class="sourate">5. Al-Maida</div></a>
+    <a href="#"><div class="sourate">6. Al-An'am</div></a>
+    <!-- On ajoutera les autres ensuite -->
+  </div>
+
+  <footer>
+    <a href="index.html">⬅ Retour à l’accueil</a>
+  </footer>
+
+</body>
+</html>
