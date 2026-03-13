@@ -1,3 +1,72 @@
-<audio controls>
-<source src="https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3">
-</audio>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Sourate</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#0f172a;
+color:white;
+margin:0;
+padding:20px;
+}
+
+h1{
+text-align:center;
+}
+
+.verset{
+direction:rtl;
+font-size:28px;
+text-align:right;
+margin:20px;
+}
+
+audio{
+display:block;
+margin:auto;
+margin-top:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1 id="titre"></h1>
+
+<div id="versets"></div>
+
+<script>
+
+const params=new URLSearchParams(window.location.search)
+const id=params.get("id")
+
+fetch("https://api.alquran.cloud/v1/surah/"+id+"/ar.alafasy")
+.then(res=>res.json())
+.then(data=>{
+
+document.getElementById("titre").innerText=data.data.englishName
+
+const container=document.getElementById("versets")
+
+data.data.ayahs.forEach(v=>{
+
+const p=document.createElement("p")
+p.className="verset"
+p.innerText=v.text
+
+container.appendChild(p)
+
+})
+
+})
+
+</script>
+
+</body>
+</html>
