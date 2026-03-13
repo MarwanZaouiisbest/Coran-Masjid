@@ -1,48 +1,106 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Coran Masjid</title>
+<meta charset="UTF-8">
+<title>Coran Masjid</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      color: white;
-      text-align: center;
-    }
+<style>
 
-    header {
-      padding: 80px 20px;
-    }
+body{
+margin:0;
+font-family:Arial;
+background:#0f172a;
+color:white;
+}
 
-    h1 {
-      font-size: 48px;
-      margin-bottom: 20px;
-    }
+header{
+background:#1e40af;
+padding:20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
 
-    p {
-      font-size: 20px;
-      opacity: 0.9;
-    }
+.logo{
+font-size:22px;
+font-weight:bold;
+}
 
-    footer {
-      margin-top: 100px;
-      font-size: 14px;
-      opacity: 0.6;
-    }
-  </style>
+nav a{
+color:white;
+text-decoration:none;
+margin-left:20px;
+}
+
+.hero{
+text-align:center;
+padding:100px 20px;
+}
+
+.hero h1{
+font-size:48px;
+margin-bottom:20px;
+}
+
+.hero p{
+font-size:20px;
+opacity:0.8;
+}
+
+.btn{
+display:inline-block;
+margin-top:30px;
+padding:15px 30px;
+background:#2563eb;
+border-radius:8px;
+text-decoration:none;
+color:white;
+font-size:18px;
+}
+
+.btn:hover{
+background:#1d4ed8;
+}
+
+footer{
+text-align:center;
+padding:30px;
+opacity:0.6;
+}
+
+</style>
+
 </head>
 
 <body>
-  <header>
-    <h1>🕌 Coran Masjid</h1>
-    <p>Bienvenue sur le site</p>
-  </header>
 
-  <footer>
-    © 2026 Coran Masjid
-  </footer>
+<header>
+<div class="logo">🕌 Coran Masjid</div>
+
+<nav>
+<a href="index.html">Accueil</a>
+<a href="sourates.html">Sourates</a>
+</nav>
+</header>
+
+<section class="hero">
+
+<h1>Lire et écouter le Coran</h1>
+
+<p>
+Découvrez toutes les sourates du Coran,
+avec lecture et récitation audio.
+</p>
+
+<a class="btn" href="sourates.html">
+Voir les sourates
+</a>
+
+</section>
+
+<footer>
+© 2026 Coran Masjid
+</footer>
+
 </body>
 </html>
