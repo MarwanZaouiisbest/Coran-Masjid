@@ -1,17 +1,24 @@
-fetch("https://api.alquran.cloud/v1/surah/1/ar.alafasy")
-.then(response => response.json())
-.then(data => {
+arabe.forEach((v,i)=>{
 
-const versets = data.data.ayahs
-const container = document.getElementById("versets")
+const div=document.createElement("div")
+div.className="verset"
 
-versets.forEach(v => {
+const a=document.createElement("p")
+a.className="arabe"
+a.innerText=v.text
 
-const p = document.createElement("p")
-p.className="arabe"
-p.textContent = v.text
+const f=document.createElement("p")
+f.className="fr"
+f.innerText=francais[i].text
 
-container.appendChild(p)
+const audio=document.createElement("audio")
+audio.controls=true
+audio.src="https://cdn.islamic.network/quran/audio/128/ar.alafasy/"+v.number+".mp3"
 
-})
+div.appendChild(a)
+div.appendChild(f)
+div.appendChild(audio)
+
+versetsDiv.appendChild(div)
+
 })
